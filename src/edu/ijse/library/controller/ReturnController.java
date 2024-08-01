@@ -5,19 +5,23 @@
 package edu.ijse.library.controller;
 
 import edu.ijse.library.dto.ReturnDto;
+import edu.ijse.library.service.ServiceFactory;
+import edu.ijse.library.service.custom.ReturnService;
+import java.util.List;
+
 
 /**
  *
  * @author osandaindunika
  */
 public class ReturnController {
-    
-    
-    public ReturnDto get(String issueID) throws Exception{
-        return null;
-    }
+    private ReturnService service = (ReturnService) ServiceFactory.getInstance().getService(ServiceFactory.ServiceType.RETURN);
     
     public String Return(ReturnDto dto) throws Exception{
-        return null;
+        return service.Return(dto);
+    }
+    
+    public List<ReturnDto> getAllReturns() throws Exception {
+        return service.getAll();
     }
 }

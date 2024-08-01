@@ -5,7 +5,8 @@
 package edu.ijse.library;
 
 //import edu.ijse.library.view.BookView;
-import edu.ijse.library.view.MemberView;
+import edu.ijse.library.view.LoginView;
+//import edu.ijse.library.view.MemberView;
 //import edu.ijse.library.view.CategoryView;
 //import edu.ijse.library.view.CategoryView;
 
@@ -22,7 +23,7 @@ public class Main {
     public static void main(String[] args) throws Exception {
 //        new BookView().setVisible(true);
 //          new CategoryView().setVisible(true);
-            new MemberView().setVisible(true);
+            new LoginView().setVisible(true);
     }
     
 }

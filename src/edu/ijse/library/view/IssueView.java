@@ -146,8 +146,10 @@ public final class IssueView extends javax.swing.JFrame {
         });
 
         jIssueDate.setDateFormatString("yyyy-MM-dd");
+        jIssueDate.setFont(new java.awt.Font("Helvetica Neue", 0, 20)); // NOI18N
 
         jDueDate.setDateFormatString("yyyy-MM-dd");
+        jDueDate.setFont(new java.awt.Font("Helvetica Neue", 0, 20)); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

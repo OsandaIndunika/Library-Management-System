@@ -8,6 +8,7 @@ import edu.ijse.library.service.custom.impl.BookServiceImpl;
 import edu.ijse.library.service.custom.impl.CategoryServiceImpl;
 import edu.ijse.library.service.custom.impl.IssueServiceImpl;
 import edu.ijse.library.service.custom.impl.MemberServiceImpl;
+import edu.ijse.library.service.custom.impl.ReturnServiceImpl;
 
 /**
  *
@@ -36,6 +37,8 @@ public class ServiceFactory {
                 return new MemberServiceImpl();
             case ISSUE:
                 return new IssueServiceImpl();
+            case RETURN:
+                return new ReturnServiceImpl();
             default:
                 return null;
         }

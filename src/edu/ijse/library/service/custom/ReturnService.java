@@ -6,6 +6,7 @@ package edu.ijse.library.service.custom;
 
 import edu.ijse.library.dto.ReturnDto;
 import edu.ijse.library.service.SuperService;
+import java.util.ArrayList;
 
 /**
  *
@@ -13,7 +14,7 @@ import edu.ijse.library.service.SuperService;
  */
 public interface ReturnService extends SuperService{
     
-    public String save(ReturnDto returnDto) throws Exception;
-    public ReturnDto get(String issueID) throws Exception;
+    public String Return(ReturnDto returnDto) throws Exception;
+    public ArrayList<ReturnDto> getAll() throws Exception;
     
 }

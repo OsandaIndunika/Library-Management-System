@@ -4,19 +4,42 @@
  */
 package edu.ijse.library.view;
 
+import edu.ijse.library.controller.BookController;
+import edu.ijse.library.controller.MemberController;
+import edu.ijse.library.controller.ReturnController;
+import edu.ijse.library.dto.BookDto;
+import edu.ijse.library.dto.MemberDto;
+import edu.ijse.library.dto.ReturnDto;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
  * @author osandaindunika
  */
-public class ReturnView extends javax.swing.JFrame {
-
+public final class ReturnView extends javax.swing.JFrame {
+    private final ReturnController Return_Controller;
+    private final MemberController Member_Controller;
+    private final BookController Book_Controller;
+    private final ArrayList<ReturnDto> returnDtos = new ArrayList<>();
+    
     /**
      * Creates new form ReturnView
+     * @throws java.lang.Exception
      */
-    public ReturnView() {
+    public ReturnView() throws Exception {
+        this.Return_Controller = new ReturnController();
+        this.Member_Controller = new MemberController();
+        this.Book_Controller = new BookController();
         initComponents();
+        loadTable();
     }
 
     /**
@@ -30,20 +53,23 @@ public class ReturnView extends javax.swing.JFrame {
 
         txtTitle = new javax.swing.JLabel();
         lblBookCode = new javax.swing.JLabel();
-        txtMemberID = new javax.swing.JTextField();
+        txtReturnID = new javax.swing.JTextField();
         lblMemberID = new javax.swing.JLabel();
         lblReturnDate = new javax.swing.JLabel();
-        ReturnDC = new com.toedter.calendar.JDateChooser();
+        jReturnD = new com.toedter.calendar.JDateChooser();
         btnReturn = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
         lblFine = new javax.swing.JLabel();
-        btnCheck = new javax.swing.JButton();
         btnBack = new javax.swing.JButton();
         lblMemberID1 = new javax.swing.JLabel();
         btnSearch = new javax.swing.JButton();
         lblFineData = new javax.swing.JLabel();
-        lblBookDetailData = new javax.swing.JLabel();
-        lblMemberDetailData = new javax.swing.JLabel();
+        lblBookData = new javax.swing.JLabel();
+        lblMemberData = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tblReturn = new javax.swing.JTable();
+        txtBookCode = new javax.swing.JTextField();
+        txtMemberID = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -51,9 +77,9 @@ public class ReturnView extends javax.swing.JFrame {
         txtTitle.setText("Return Book/s");
 
         lblBookCode.setFont(new java.awt.Font("Chalkboard", 0, 25)); // NOI18N
-        lblBookCode.setText("Book Details");
+        lblBookCode.setText("Book Code");
 
-        txtMemberID.setFont(new java.awt.Font("Helvetica Neue", 0, 20)); // NOI18N
+        txtReturnID.setFont(new java.awt.Font("Helvetica Neue", 0, 20)); // NOI18N
 
         lblMemberID.setFont(new java.awt.Font("Chalkboard", 0, 25)); // NOI18N
         lblMemberID.setText("Return ID");
@@ -61,9 +87,10 @@ public class ReturnView extends javax.swing.JFrame {
         lblReturnDate.setFont(new java.awt.Font("Chalkboard", 0, 25)); // NOI18N
         lblReturnDate.setText("Return Date");
 
-        ReturnDC.setDateFormatString("dd-MM-YYYY");
-        ReturnDC.setFont(new java.awt.Font("Helvetica Neue", 0, 20)); // NOI18N
+        jReturnD.setDateFormatString("dd-MM-YYYY");
+        jReturnD.setFont(new java.awt.Font("Helvetica Neue", 0, 20)); // NOI18N
 
+        btnReturn.setBackground(new java.awt.Color(204, 0, 51));
         btnReturn.setFont(new java.awt.Font("Helvetica Neue", 1, 20)); // NOI18N
         btnReturn.setText("Return");
         btnReturn.addActionListener(new java.awt.event.ActionListener() {
@@ -75,15 +102,6 @@ public class ReturnView extends javax.swing.JFrame {
         lblFine.setFont(new java.awt.Font("Chalkboard", 0, 25)); // NOI18N
         lblFine.setText("Fine ");
 
-        btnCheck.setBackground(new java.awt.Color(204, 0, 51));
-        btnCheck.setFont(new java.awt.Font("Helvetica Neue", 1, 20)); // NOI18N
-        btnCheck.setText("CHECK");
-        btnCheck.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCheckActionPerformed(evt);
-            }
-        });
-
         btnBack.setFont(new java.awt.Font("Helvetica Neue", 1, 20)); // NOI18N
         btnBack.setText("BACK");
         btnBack.addActionListener(new java.awt.event.ActionListener() {
@@ -93,7 +111,7 @@ public class ReturnView extends javax.swing.JFrame {
         });
 
         lblMemberID1.setFont(new java.awt.Font("Chalkboard", 0, 25)); // NOI18N
-        lblMemberID1.setText("Member Details");
+        lblMemberID1.setText("Member ID");
 
         btnSearch.setBackground(new java.awt.Color(0, 51, 204));
         btnSearch.setFont(new java.awt.Font("Helvetica Neue", 1, 20)); // NOI18N
@@ -106,53 +124,77 @@ public class ReturnView extends javax.swing.JFrame {
 
         lblFineData.setFont(new java.awt.Font("Heiti TC", 0, 20)); // NOI18N
 
-        lblBookDetailData.setFont(new java.awt.Font("Heiti TC", 0, 20)); // NOI18N
+        lblBookData.setFont(new java.awt.Font("Heiti TC", 0, 20)); // NOI18N
 
-        lblMemberDetailData.setFont(new java.awt.Font("Heiti TC", 0, 20)); // NOI18N
+        lblMemberData.setFont(new java.awt.Font("Heiti TC", 0, 20)); // NOI18N
+
+        tblReturn.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane1.setViewportView(tblReturn);
+
+        txtBookCode.setFont(new java.awt.Font("Helvetica Neue", 0, 20)); // NOI18N
+
+        txtMemberID.setFont(new java.awt.Font("Helvetica Neue", 0, 20)); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jSeparator1)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jSeparator1)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(lblMemberID)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(lblFine)
+                                .addGap(40, 40, 40)
+                                .addComponent(lblFineData, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnReturn))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(lblReturnDate)
+                                .addGap(17, 17, 17)
+                                .addComponent(jReturnD, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnSearch)))))
+                .addContainerGap())
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addGroup(layout.createSequentialGroup()
                         .addComponent(btnBack)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 223, Short.MAX_VALUE)
                         .addComponent(txtTitle)
                         .addGap(277, 277, 277))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(lblFine)
-                        .addGap(40, 40, 40)
-                        .addComponent(lblFineData, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(btnReturn)
-                        .addGap(17, 17, 17))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(lblReturnDate)
-                        .addGap(17, 17, 17)
-                        .addComponent(ReturnDC, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnCheck)
-                        .addGap(19, 19, 19))
+                        .addComponent(jScrollPane1)
+                        .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lblBookCode)
-                            .addComponent(lblMemberID)
                             .addComponent(lblMemberID1))
                         .addGap(21, 21, 21)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(txtBookCode, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtMemberID, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtReturnID, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblMemberDetailData, javax.swing.GroupLayout.PREFERRED_SIZE, 510, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(txtMemberID, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(60, 60, 60)
-                                .addComponent(btnSearch))
-                            .addComponent(lblBookDetailData, javax.swing.GroupLayout.PREFERRED_SIZE, 510, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap(153, Short.MAX_VALUE))))
+                            .addComponent(lblBookData, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 510, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblMemberData, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 510, javax.swing.GroupLayout.PREFERRED_SIZE)))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -161,52 +203,56 @@ public class ReturnView extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnBack, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtTitle))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 17, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtMemberID, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblMemberID)
-                    .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtReturnID, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblMemberID))
+                .addGap(26, 26, 26)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(lblBookCode)
-                    .addComponent(lblBookDetailData, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(lblBookData, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtBookCode, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(21, 21, 21)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(lblMemberID1)
-                    .addComponent(lblMemberDetailData, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(21, 21, 21)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(lblMemberID1)
+                        .addComponent(txtMemberID, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(lblMemberData, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(29, 29, 29)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(btnCheck, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(ReturnDC, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblReturnDate))
-                        .addGap(43, 43, 43)))
+                    .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jReturnD, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblReturnDate))
+                .addGap(12, 12, 12)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblFine)
-                    .addComponent(lblFineData, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnReturn, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(15, 15, 15))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(49, 49, 49)
+                        .addComponent(btnReturn, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblFine)
+                            .addComponent(lblFineData, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 415, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnReturnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReturnActionPerformed
-        // TODO add your handling code here:
+       try {
+            placeReturn();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e.getMessage());
+        }
     }//GEN-LAST:event_btnReturnActionPerformed
 
-    private void btnCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCheckActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnCheckActionPerformed
-
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
-        // TODO add your handling code here:
+        getDetails();
+//        fineCal();
     }//GEN-LAST:event_btnSearchActionPerformed
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
@@ -247,27 +293,149 @@ public class ReturnView extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new ReturnView().setVisible(true);
+                try {
+                    new ReturnView().setVisible(true);
+                } catch (Exception ex) {
+                    Logger.getLogger(IssueView.class.getName()).log(Level.SEVERE, null, ex);
+
+                }
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private com.toedter.calendar.JDateChooser ReturnDC;
     private javax.swing.JButton btnBack;
-    private javax.swing.JButton btnCheck;
     private javax.swing.JButton btnReturn;
     private javax.swing.JButton btnSearch;
+    private com.toedter.calendar.JDateChooser jReturnD;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JLabel lblBookCode;
-    private javax.swing.JLabel lblBookDetailData;
+    private javax.swing.JLabel lblBookData;
     private javax.swing.JLabel lblFine;
     private javax.swing.JLabel lblFineData;
-    private javax.swing.JLabel lblMemberDetailData;
+    private javax.swing.JLabel lblMemberData;
     private javax.swing.JLabel lblMemberID;
     private javax.swing.JLabel lblMemberID1;
     private javax.swing.JLabel lblReturnDate;
+    private javax.swing.JTable tblReturn;
+    private javax.swing.JTextField txtBookCode;
     private javax.swing.JTextField txtMemberID;
+    private javax.swing.JTextField txtReturnID;
     private javax.swing.JLabel txtTitle;
     // End of variables declaration//GEN-END:variables
+
+    public void loadTable() throws Exception{
+        String columns[] = {"ReturnID", "BookCode", "MemberID", "ReturnDate", "Fine"};
+        DefaultTableModel dtm=new DefaultTableModel(columns,0){
+            @Override
+            public boolean isCellEditable(int row, int column){
+                return false;
+            }
+        };
+        tblReturn.setModel(dtm);
+    }
+    
+    private void clearData(){
+        txtReturnID.setText("");
+        txtBookCode.setText("");
+        txtMemberID.setText("");
+        jReturnD.setDate(null);
+        lblFineData.setText("");
+        lblBookData.setText("");  // Clear book data label
+        lblMemberData.setText("");  // Clear member data label
+    }
+
+    private void getDetails() {
+        try {
+            // Search for the book
+            String bookCode = txtBookCode.getText();
+            BookDto bookDto = Book_Controller.get(bookCode);
+            if (bookDto != null) {
+                lblBookData.setText(bookDto.getBookTitle() + " | " + bookDto.getPublisher() + " | " + bookDto.getAuthor());
+            } else {
+                lblBookData.setText("Book Not Found.");
+            }
+
+            // Search for the member
+            String memberID = txtMemberID.getText();
+            MemberDto memberDto = Member_Controller.get(memberID);
+            if (memberDto != null) {
+                lblMemberData.setText(memberDto.getMemberTitle() + " " + memberDto.getMemberName() + " | " + memberDto.getContact() + " | " + memberDto.getEmail());
+            } else {
+                lblMemberData.setText("Member Not Found.");
+            }
+
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, e.getMessage());
+            }
+        }
+
+//    private void fineCal() {
+//        double dailyFineRate = 50; // Example daily fine rate
+//    LibraryFineCalculator calculator = new LibraryFineCalculator(); // Create an instance of LibraryFineCalculator
+//
+//    Date selectedDate = jReturnD.getDate();
+//    if (selectedDate != null) {
+//        LocalDate returnDate = selectedDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+//
+//        // Assume dueDate is defined and available in this context
+//        LocalDate dueDate = ...; // Replace with actual due date
+//
+//        double fine = calculator.calculateFine(dueDate, returnDate, dailyFineRate);
+//        lblFineData.setText("The fine for the late return is: Rs. " + fine);
+//    } else {
+//        lblFineData.setText("Please select a return date.");
+//    }
+//    }
+
+    private void placeReturn() {
+        try {
+            ReturnDto dto = new ReturnDto();
+            dto.setReturnID(txtReturnID.getText());
+            dto.setBookCode(txtBookCode.getText());
+            dto.setMemberID(txtMemberID.getText());
+
+            // Convert the date to a suitable format
+            Date returnDate = jReturnD.getDate();
+            if (returnDate != null) {
+                dto.setReturnDate(new java.sql.Date(returnDate.getTime()));
+            } else {
+                JOptionPane.showMessageDialog(this, "Please select a return date.");
+                return;
+            }
+
+            // Ensure fine is a double
+            double fine = Double.parseDouble(lblFineData.getText());
+            dto.setFine(fine);
+
+            // Add the dto to the list
+            returnDtos.add(dto);
+
+            // Add the dto to the table
+            Object[] rowData = {
+                dto.getReturnID(),
+                dto.getBookCode(),
+                dto.getMemberID(),
+                new SimpleDateFormat("yyyy-MM-dd").format(dto.getReturnDate()),
+                dto.getFine()
+            };
+            DefaultTableModel dtm = (DefaultTableModel) tblReturn.getModel();
+            dtm.addRow(rowData);
+
+            // Call the controller method to handle the return
+            String rsp = Return_Controller.Return(dto);
+            JOptionPane.showMessageDialog(this, rsp);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Invalid fine amount. Please enter a valid number.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, e.getMessage());
+        }
+        clearData();
+    }
+    
+    
+
+    
 }

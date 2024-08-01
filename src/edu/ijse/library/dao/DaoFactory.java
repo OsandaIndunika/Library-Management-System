@@ -8,6 +8,7 @@ import edu.ijse.library.dao.custom.impl.BookDaoImpl;
 import edu.ijse.library.dao.custom.impl.CategoryDaoImpl;
 import edu.ijse.library.dao.custom.impl.IssueDaoImpl;
 import edu.ijse.library.dao.custom.impl.MemberDaoImpl;
+import edu.ijse.library.dao.custom.impl.ReturnDaoImpl;
 
 /**
  *
@@ -37,6 +38,8 @@ public class DaoFactory {
                 return new MemberDaoImpl();
             case ISSUE:
                 return new IssueDaoImpl();
+            case RETURN:
+                return new ReturnDaoImpl();
             default:
                 return null;
         }
