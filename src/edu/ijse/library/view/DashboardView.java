@@ -33,8 +33,8 @@ public class DashboardView extends javax.swing.JFrame {
         btnReturnBook = new javax.swing.JButton();
         btnBook = new javax.swing.JButton();
         btnIssueBook = new javax.swing.JButton();
-        lblDateTime = new javax.swing.JLabel();
         btnLogOut = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -78,8 +78,6 @@ public class DashboardView extends javax.swing.JFrame {
             }
         });
 
-        lblDateTime.setFont(new java.awt.Font("Heiti TC", 0, 20)); // NOI18N
-
         btnLogOut.setFont(new java.awt.Font("Segoe UI", 1, 20)); // NOI18N
         btnLogOut.setText("Log Out");
         btnLogOut.addActionListener(new java.awt.event.ActionListener() {
@@ -88,49 +86,52 @@ public class DashboardView extends javax.swing.JFrame {
             }
         });
 
+        jLabel1.setFont(new java.awt.Font("Kefa", 0, 40)); // NOI18N
+        jLabel1.setText("WELCOME TO LIBRARY MANAGEMENT SYSTEM!!!");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(224, 224, 224)
-                .addComponent(btnBook)
-                .addGap(193, 193, 193)
-                .addComponent(btnIssueBook)
-                .addContainerGap(203, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
                         .addComponent(btnBookCategory)
                         .addGap(134, 134, 134)
                         .addComponent(btnMember)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(235, 235, 235)
                         .addComponent(btnReturnBook))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblDateTime, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnLogOut, javax.swing.GroupLayout.Alignment.TRAILING))))
-                .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(224, 224, 224)
+                        .addComponent(btnBook)
+                        .addGap(193, 193, 193)
+                        .addComponent(btnIssueBook)))
+                .addContainerGap(59, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(btnLogOut)
+                    .addComponent(jLabel1))
+                .addGap(16, 16, 16))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(lblDateTime, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabel1)
                 .addGap(139, 139, 139)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnBookCategory)
                     .addComponent(btnMember)
                     .addComponent(btnReturnBook))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 83, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 32, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnBook)
                     .addComponent(btnIssueBook))
-                .addGap(149, 149, 149)
+                .addGap(134, 134, 134)
                 .addComponent(btnLogOut)
-                .addContainerGap())
+                .addGap(21, 21, 21))
         );
 
         pack();
@@ -224,6 +225,6 @@ public class DashboardView extends javax.swing.JFrame {
     private javax.swing.JButton btnLogOut;
     private javax.swing.JButton btnMember;
     private javax.swing.JButton btnReturnBook;
-    private javax.swing.JLabel lblDateTime;
+    private javax.swing.JLabel jLabel1;
     // End of variables declaration//GEN-END:variables
 }

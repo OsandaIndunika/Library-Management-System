@@ -15,13 +15,14 @@ import java.util.List;
  * @author osandaindunika
  */
 public class ReturnController {
-    private ReturnService service = (ReturnService) ServiceFactory.getInstance().getService(ServiceFactory.ServiceType.RETURN);
+    private final ReturnService service = (ReturnService) ServiceFactory.getInstance().getService(ServiceFactory.ServiceType.RETURN);
+    
+    public ReturnDto get(String memberID, String bookCode) throws Exception{
+        return service.get(memberID,bookCode);
+    }
     
     public String Return(ReturnDto dto) throws Exception{
-        return service.Return(dto);
+        return service.save(dto);
     }
     
-    public List<ReturnDto> getAllReturns() throws Exception {
-        return service.getAll();
-    }
 }

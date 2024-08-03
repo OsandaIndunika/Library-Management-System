@@ -15,14 +15,16 @@ public class ReturnEntity {
     private String returnID;
     private String memberID;
     private String bookCode;
-    private Date returnDate;
+    private String returnDate;
+    private Integer dateDifference;
     private Double fine;
 
-    public ReturnEntity(String returnID, String memberID, String bookCode, Date returnDate, Double fine) {
+    public ReturnEntity(String returnID, String memberID, String bookCode, String returnDate, Integer dateDifference, Double fine) {
         this.returnID = returnID;
         this.memberID = memberID;
         this.bookCode = bookCode;
         this.returnDate = returnDate;
+        this.dateDifference = dateDifference;
         this.fine = fine;
     }
 
@@ -53,12 +55,20 @@ public class ReturnEntity {
         this.bookCode = bookCode;
     }
 
-    public Date getReturnDate() {
+    public String getReturnDate() {
         return returnDate;
     }
 
-    public void setReturnDate(Date returnDate) {
+    public void setReturnDate(String returnDate) {
         this.returnDate = returnDate;
+    }
+
+    public Integer getDateDifference() {
+        return dateDifference;
+    }
+
+    public void setDateDifference(Integer dateDifference) {
+        this.dateDifference = dateDifference;
     }
 
     public Double getFine() {
@@ -71,9 +81,7 @@ public class ReturnEntity {
 
     @Override
     public String toString() {
-        return "ReturnEntity{" + "returnID=" + returnID + ", memberID=" + memberID + ", bookCode=" + bookCode + ", returnDate=" + returnDate + ", fine=" + fine + '}';
+        return "ReturnEntity{" + "returnID=" + returnID + ", memberID=" + memberID + ", bookCode=" + bookCode + ", returnDate=" + returnDate + ", dateDifference=" + dateDifference + ", fine=" + fine + '}';
     }
-
-    
-    
+  
 }

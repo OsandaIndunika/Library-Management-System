@@ -4,13 +4,13 @@
  */
 package edu.ijse.library.dao.custom;
 
-import edu.ijse.library.dao.CrudDao;
+import edu.ijse.library.dao.CrudDaoReturn;
 import edu.ijse.library.entity.ReturnEntity;
 
 /**
  *
  * @author osandaindunika
  */
-public interface ReturnDao extends CrudDao<ReturnEntity, String>{
+public interface ReturnDao extends CrudDaoReturn<ReturnEntity, String, String>{
     
 }

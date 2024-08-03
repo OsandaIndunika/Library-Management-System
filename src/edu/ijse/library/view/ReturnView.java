@@ -5,18 +5,23 @@
 package edu.ijse.library.view;
 
 import edu.ijse.library.controller.BookController;
+import edu.ijse.library.controller.IssueController;
 import edu.ijse.library.controller.MemberController;
 import edu.ijse.library.controller.ReturnController;
 import edu.ijse.library.dto.BookDto;
 import edu.ijse.library.dto.MemberDto;
 import edu.ijse.library.dto.ReturnDto;
+import edu.ijse.library.service.custom.BookService;
+import edu.ijse.library.service.custom.ReturnService;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.accessibility.AccessibleRole;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -24,10 +29,11 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author osandaindunika
  */
-public final class ReturnView extends javax.swing.JFrame {
+public class ReturnView extends javax.swing.JFrame {
     private final ReturnController Return_Controller;
     private final MemberController Member_Controller;
     private final BookController Book_Controller;
+    private final IssueController Issue_Controller;
     private final ArrayList<ReturnDto> returnDtos = new ArrayList<>();
     
     /**
@@ -38,6 +44,7 @@ public final class ReturnView extends javax.swing.JFrame {
         this.Return_Controller = new ReturnController();
         this.Member_Controller = new MemberController();
         this.Book_Controller = new BookController();
+        this.Issue_Controller = new IssueController();
         initComponents();
         loadTable();
     }
@@ -55,9 +62,7 @@ public final class ReturnView extends javax.swing.JFrame {
         lblBookCode = new javax.swing.JLabel();
         txtReturnID = new javax.swing.JTextField();
         lblMemberID = new javax.swing.JLabel();
-        lblReturnDate = new javax.swing.JLabel();
-        jReturnD = new com.toedter.calendar.JDateChooser();
-        btnReturn = new javax.swing.JButton();
+        btnFineCal = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
         lblFine = new javax.swing.JLabel();
         btnBack = new javax.swing.JButton();
@@ -70,6 +75,7 @@ public final class ReturnView extends javax.swing.JFrame {
         tblReturn = new javax.swing.JTable();
         txtBookCode = new javax.swing.JTextField();
         txtMemberID = new javax.swing.JTextField();
+        btnReturnBook = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -84,18 +90,12 @@ public final class ReturnView extends javax.swing.JFrame {
         lblMemberID.setFont(new java.awt.Font("Chalkboard", 0, 25)); // NOI18N
         lblMemberID.setText("Return ID");
 
-        lblReturnDate.setFont(new java.awt.Font("Chalkboard", 0, 25)); // NOI18N
-        lblReturnDate.setText("Return Date");
-
-        jReturnD.setDateFormatString("dd-MM-YYYY");
-        jReturnD.setFont(new java.awt.Font("Helvetica Neue", 0, 20)); // NOI18N
-
-        btnReturn.setBackground(new java.awt.Color(204, 0, 51));
-        btnReturn.setFont(new java.awt.Font("Helvetica Neue", 1, 20)); // NOI18N
-        btnReturn.setText("Return");
-        btnReturn.addActionListener(new java.awt.event.ActionListener() {
+        btnFineCal.setBackground(new java.awt.Color(204, 0, 51));
+        btnFineCal.setFont(new java.awt.Font("Helvetica Neue", 1, 20)); // NOI18N
+        btnFineCal.setText("Fine Calculator");
+        btnFineCal.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnReturnActionPerformed(evt);
+                btnFineCalActionPerformed(evt);
             }
         });
 
@@ -145,6 +145,15 @@ public final class ReturnView extends javax.swing.JFrame {
 
         txtMemberID.setFont(new java.awt.Font("Helvetica Neue", 0, 20)); // NOI18N
 
+        btnReturnBook.setBackground(new java.awt.Color(0, 153, 153));
+        btnReturnBook.setFont(new java.awt.Font("Helvetica Neue", 1, 20)); // NOI18N
+        btnReturnBook.setText("Return Book");
+        btnReturnBook.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnReturnBookActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -161,14 +170,11 @@ public final class ReturnView extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(lblFine)
                                 .addGap(40, 40, 40)
-                                .addComponent(lblFineData, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(lblFineData, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btnReturn))
+                                .addComponent(btnFineCal))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(lblReturnDate)
-                                .addGap(17, 17, 17)
-                                .addComponent(jReturnD, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(0, 0, Short.MAX_VALUE)
                                 .addComponent(btnSearch)))))
                 .addContainerGap())
             .addGroup(layout.createSequentialGroup()
@@ -191,10 +197,14 @@ public final class ReturnView extends javax.swing.JFrame {
                             .addComponent(txtBookCode, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtMemberID, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtReturnID, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(52, 52, 52)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblBookData, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 510, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblMemberData, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 510, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                            .addComponent(lblBookData, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(lblMemberData, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(btnReturnBook)
+                .addGap(332, 332, 332))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -207,52 +217,50 @@ public final class ReturnView extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtReturnID, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblMemberID))
-                .addGap(26, 26, 26)
+                .addGap(32, 32, 32)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(lblBookCode)
                     .addComponent(lblBookData, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtBookCode, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(21, 21, 21)
+                .addGap(26, 26, 26)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(lblMemberID1)
                         .addComponent(txtMemberID, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(lblMemberData, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(29, 29, 29)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jReturnD, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblReturnDate))
+                .addGap(18, 18, 18)
+                .addComponent(btnSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(12, 12, 12)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(49, 49, 49)
-                        .addComponent(btnReturn, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(btnFineCal, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lblFine)
                             .addComponent(lblFineData, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(87, 87, 87)
+                .addComponent(btnReturnBook, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 415, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnReturnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReturnActionPerformed
+    private void btnFineCalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFineCalActionPerformed
        try {
-            placeReturn();
+//            fineCal();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
-    }//GEN-LAST:event_btnReturnActionPerformed
+    }//GEN-LAST:event_btnFineCalActionPerformed
 
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
         getDetails();
-//        fineCal();
     }//GEN-LAST:event_btnSearchActionPerformed
 
     private void btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBackActionPerformed
@@ -262,6 +270,10 @@ public final class ReturnView extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, ex.getMessage());
         }
     }//GEN-LAST:event_btnBackActionPerformed
+
+    private void btnReturnBookActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReturnBookActionPerformed
+       placeReturn() ;
+    }//GEN-LAST:event_btnReturnBookActionPerformed
 
     /**
      * @param args the command line arguments
@@ -302,12 +314,11 @@ public final class ReturnView extends javax.swing.JFrame {
             }
         });
     }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBack;
-    private javax.swing.JButton btnReturn;
+    private javax.swing.JButton btnFineCal;
+    private javax.swing.JButton btnReturnBook;
     private javax.swing.JButton btnSearch;
-    private com.toedter.calendar.JDateChooser jReturnD;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JLabel lblBookCode;
@@ -317,7 +328,6 @@ public final class ReturnView extends javax.swing.JFrame {
     private javax.swing.JLabel lblMemberData;
     private javax.swing.JLabel lblMemberID;
     private javax.swing.JLabel lblMemberID1;
-    private javax.swing.JLabel lblReturnDate;
     private javax.swing.JTable tblReturn;
     private javax.swing.JTextField txtBookCode;
     private javax.swing.JTextField txtMemberID;
@@ -340,7 +350,6 @@ public final class ReturnView extends javax.swing.JFrame {
         txtReturnID.setText("");
         txtBookCode.setText("");
         txtMemberID.setText("");
-        jReturnD.setDate(null);
         lblFineData.setText("");
         lblBookData.setText("");  // Clear book data label
         lblMemberData.setText("");  // Clear member data label
@@ -366,76 +375,68 @@ public final class ReturnView extends javax.swing.JFrame {
                 lblMemberData.setText("Member Not Found.");
             }
 
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, e.getMessage());
-            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, e.getMessage());
         }
-
-//    private void fineCal() {
-//        double dailyFineRate = 50; // Example daily fine rate
-//    LibraryFineCalculator calculator = new LibraryFineCalculator(); // Create an instance of LibraryFineCalculator
-//
-//    Date selectedDate = jReturnD.getDate();
-//    if (selectedDate != null) {
-//        LocalDate returnDate = selectedDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-//
-//        // Assume dueDate is defined and available in this context
-//        LocalDate dueDate = ...; // Replace with actual due date
-//
-//        double fine = calculator.calculateFine(dueDate, returnDate, dailyFineRate);
-//        lblFineData.setText("The fine for the late return is: Rs. " + fine);
-//    } else {
-//        lblFineData.setText("Please select a return date.");
-//    }
-//    }
+    }
 
     private void placeReturn() {
-        try {
+         try {
             ReturnDto dto = new ReturnDto();
             dto.setReturnID(txtReturnID.getText());
             dto.setBookCode(txtBookCode.getText());
             dto.setMemberID(txtMemberID.getText());
-
-            // Convert the date to a suitable format
-            Date returnDate = jReturnD.getDate();
-            if (returnDate != null) {
-                dto.setReturnDate(new java.sql.Date(returnDate.getTime()));
-            } else {
-                JOptionPane.showMessageDialog(this, "Please select a return date.");
-                return;
-            }
-
-            // Ensure fine is a double
-            double fine = Double.parseDouble(lblFineData.getText());
-            dto.setFine(fine);
-
-            // Add the dto to the list
+            dto.setFine(Double.parseDouble(lblFineData.getText()));
+            
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            String returnDate = sdf.format(new Date());
+            dto.setReturnDate(returnDate);
+            
             returnDtos.add(dto);
 
-            // Add the dto to the table
-            Object[] rowData = {
-                dto.getReturnID(),
-                dto.getBookCode(),
-                dto.getMemberID(),
-                new SimpleDateFormat("yyyy-MM-dd").format(dto.getReturnDate()),
-                dto.getFine()
-            };
+            Object rowData[] = {dto.getReturnID(), dto.getBookCode(), dto.getMemberID(), dto.getReturnDate(), dto.getFine()};
             DefaultTableModel dtm = (DefaultTableModel) tblReturn.getModel();
             dtm.addRow(rowData);
 
-            // Call the controller method to handle the return
             String rsp = Return_Controller.Return(dto);
             JOptionPane.showMessageDialog(this, rsp);
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Invalid fine amount. Please enter a valid number.");
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
         clearData();
     }
-    
-    
 
+    private void fineCal(String memberID, String bookCode) {
+    try {
+        if (!txtReturnID.getText().isEmpty()) {
+            // Fetch the due date from the database
+            LocalDate dueDate = getDueDate(memberID, bookCode);
+
+            if (dueDate != null) {
+                LocalDate returnDate = LocalDate.now();
+                
+                // Calculate the difference in days
+                long dateRange = ChronoUnit.DAYS.between(dueDate, returnDate);
+                
+                double perDayFine = 50.00;
+                double fine = 0.0;
+                
+                if (dateRange > 0) {
+                    fine = perDayFine * dateRange;
+                    lblFineData.setText(Double.toString(fine));
+                } else {
+                    lblFineData.setText("No Fine.");
+                }
+            } else {
+                lblFineData.setText("Due Date Not Found.");
+            }
+        }
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, e.getMessage());
+    }
+}
+    
+    
     
 }

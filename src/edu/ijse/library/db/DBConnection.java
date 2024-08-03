@@ -14,15 +14,14 @@ import java.sql.SQLException;
  */
 public class DBConnection {
     
-     private static DBConnection dBConnection;
-    
+    private static DBConnection dBConnection; 
     private final Connection connection ;
     
     private DBConnection() throws ClassNotFoundException, SQLException {
         Class.forName("com.mysql.cj.jdbc.Driver");
         connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/Library", "root", "12345678");
-
-}
+    }
+    
     public static DBConnection getInstance() throws ClassNotFoundException, SQLException {
         if(dBConnection == null){
             dBConnection = new DBConnection();           
